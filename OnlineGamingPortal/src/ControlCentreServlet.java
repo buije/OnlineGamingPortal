@@ -19,10 +19,11 @@ public class ControlCentreServlet extends HttpServlet{
 	ServletException, IOException{
 
 		//1. Get the user's input from the HTML Page
-		String usernameInputByUser = request.getParameter("UserName");
-		String passwordInputByUser = request.getParameter("Password");
-		
-		//2 Put the mood into the database
+		String usernameInputByUser = request.getParameter("userName");
+		String passwordInputByUser = request.getParameter("passWord");
+		 String passwordInputByUser2 = request.getParameter("passWord2");
+
+		//2 Put the user info in the database
 		Connection connection = null;
 		try {
 			connection = DriverManager.getConnection(
@@ -35,10 +36,10 @@ public class ControlCentreServlet extends HttpServlet{
 		try {
 			PreparedStatement enterMood = connection.prepareStatement(
 					"INSERT into Users "
-							+ "(UserName)" +" VALUES (?)");
+							+ "(userName,passWord)" +" VALUES (?,?)");
 			//pass in the values as parameters
 			enterMood.setString(1, usernameInputByUser);
-			//enterMood.setString(2, passwordInputByUser);
+			enterMood.setString(2, passwordInputByUser);
 			int rowsUpdated = enterMood.executeUpdate();
 			enterMood.close();
 		} catch (SQLException e1) {
@@ -49,8 +50,8 @@ public class ControlCentreServlet extends HttpServlet{
 		response.setContentType("text/html");
 		PrintWriter out = response.getWriter();
 		out.println("<html><head><title>Response Page</title></head><body> Hello User. "
-				+ "Your User Name and password have been stored :"+usernameInputByUser + passwordInputByUser+
-				".</br><h1> THANK YOU </h1> </body><html>");
+				+  "User Info is :"+usernameInputByUser+ passwordInputByUser+passwordInputByUser2+
+                ".</br><h1> THANK YOU </h1> </body><html>");
 	}
 
 }
