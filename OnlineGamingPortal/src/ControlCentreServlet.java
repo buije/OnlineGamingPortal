@@ -50,29 +50,37 @@ public class ControlCentreServlet extends HttpServlet{
 					e1.printStackTrace();
 				}
 
-				String sql = "SELECT * FROM User WHERE userName='" + usernameInputByUser;
+				String sql = "SELECT * FROM GamingPortal.User WHERE userName=? and passWord=?";
 				
 				
-				int CreditsInputByUser = 0;
+				
 				try {
 				PreparedStatement stmt = connection.prepareStatement(sql);
-					ResultSet rs = stmt.executeQuery(sql);
+				stmt.setString(1, usernameInputByUser);
+				stmt.setString(2, passwordInputByUser);
+				
+				ResultSet rs = stmt.executeQuery();
 					
-					CreditsInputByUser = rs.getInt("Credits");
-					
-				} catch (SQLException e) {
+				if (rs.next()) {
+					response.setContentType("text/html");
+					PrintWriter out = response.getWriter();
+					out.println("<html><head><title>Response Page</title></head><body> Hello User. " + "\t\nUserName :"
+							+ usernameInputByUser + "\t\nPassWord:  " + passwordInputByUser + "\t\nCredits: " + rs.getInt("Credits")
+							+ ".</br><h1> THANK YOU FOR REGISTERING </h1> </body><html>");
+				}
+				} catch (SQLException e2) {
 					// TODO Auto-generated catch block
-					e.printStackTrace();
+					e2.printStackTrace();
 				}
 			
 				
 
 				//3. Send back a response to the user
-				response.setContentType("text/html");
-				PrintWriter out = response.getWriter();
-				out.println("<html><head><title>Response Page</title></head><body> Hello User. "
-						+  "\t\nUserName :"+usernameInputByUser+"\t\nPassWord:  "+ passwordInputByUser+"\t\nCredits:  "+ CreditsInputByUser+
-		                ".</br><h1> THANK YOU </h1> </body><html>");
+				//response.setContentType("text/html");
+				//PrintWriter out = response.getWriter();
+				//out.println("<html><head><title>Response Page</title></head><body> Hello User. "
+					//	+  "\t\nUserName :"+usernameInputByUser+"\t\nPassWord:  "+ passwordInputByUser+"\t\nCredits:  "+ CreditsInputByUser+
+		            //    ".</br><h1> THANK YOU </h1> </body><html>");
         
          }
 		 else{
