@@ -74,13 +74,6 @@ public class ControlCentreServlet extends HttpServlet{
 				}
 			
 				
-
-				//3. Send back a response to the user
-				//response.setContentType("text/html");
-				//PrintWriter out = response.getWriter();
-				//out.println("<html><head><title>Response Page</title></head><body> Hello User. "
-					//	+  "\t\nUserName :"+usernameInputByUser+"\t\nPassWord:  "+ passwordInputByUser+"\t\nCredits:  "+ CreditsInputByUser+
-		            //    ".</br><h1> THANK YOU </h1> </body><html>");
         
          }
 		 else{
