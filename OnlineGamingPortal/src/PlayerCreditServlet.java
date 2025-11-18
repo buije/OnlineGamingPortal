@@ -20,7 +20,7 @@ public class PlayerCreditServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String username = request.getParameter("userName");
         String password = request.getParameter("passWord");
-        String action = request.getParameter("action"); 
+        String action = request.getParameter("action"); // "add" or "spend"
         int creditChange = Integer.parseInt(request.getParameter("credits"));
 
         String sql = "SELECT * FROM GamingPortal.User WHERE userName=? AND passWord=?";
@@ -32,6 +32,49 @@ public class PlayerCreditServlet extends HttpServlet {
 
                 try (ResultSet rs = stmt.executeQuery()) {
                     if (rs.next()) {
-                        int currentCredits = rs.getInt("Credits");
+                        int currentCredits = rs.getInt("Credits"); 
 
-             
+                        // Perform action based on user input
+                        if ("add".equalsIgnoreCase(action)) {
+                            currentCredits += creditChange;
+                        } else if ("spend".equalsIgnoreCase(action)) {
+                            if (currentCredits >= creditChange) {
+                                currentCredits -= creditChange;
+                            } else {
+                                sendResponse(response, username, currentCredits, "Insufficient credits to complete the transaction.");
+                                return;
+                            }
+                        }
+
+                        // Update credits in the database
+                        String updateSql = "UPDATE GamingPortal.User SET Credits=? WHERE userName=?";
+                        try (PreparedStatement updateStmt = connection.prepareStatement(updateSql)) {
+                            updateStmt.setInt(1, currentCredits);
+                            updateStmt.setString(2, username);
+                            updateStmt.executeUpdate();
+                        }
+
+                        // Send success response
+                        sendResponse(response, username, currentCredits, "Transaction successful!");
+                    } else {
+                        sendResponse(response, username, 0, "Invalid username or password.");
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Database error occurred.");
+        }
+    }
+
+    private void sendResponse(HttpServletResponse response, String username, int credits, String message) throws IOException {
+        response.setContentType("text/html");
+        try (PrintWriter out = response.getWriter()) {
+            out.println("<html><head><title>Player Credits</title></head><body>");
+            out.println("<h1>" + message + "</h1>");
+            out.println("<p>Gamer Tag: " + username + "</p>");
+            out.println("<p>Current Credits: " + credits + "</p>");
+            out.println("</body></html>");
+        }
+    }
+}
